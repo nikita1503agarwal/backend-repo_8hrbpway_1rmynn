@@ -11,10 +11,10 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 
-# Example schemas (replace with your own):
+# Example schemas (retain for reference):
 
 class User(BaseModel):
     """
@@ -22,7 +22,7 @@ class User(BaseModel):
     Collection name: "user" (lowercase of class name)
     """
     name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
+    email: EmailStr = Field(..., description="Email address")
     address: str = Field(..., description="Address")
     age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
     is_active: bool = Field(True, description="Whether user is active")
@@ -38,11 +38,19 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
-
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+# ---------------------------------------------
+# Lead capture schema for B2B SaaS landing page
+# Collection name: "lead"
+# ---------------------------------------------
+class Lead(BaseModel):
+    company: str = Field(..., min_length=2, description="Company name")
+    full_name: str = Field(..., min_length=2, description="Contact person full name")
+    email: EmailStr = Field(..., description="Business email")
+    phone: Optional[str] = Field(None, description="Phone number")
+    employees: Optional[str] = Field(
+        None,
+        description="Company size segment (e.g., 1-10, 11-50, 51-200, 200+)"
+    )
+    plan: Optional[str] = Field(None, description="Selected plan at submission time")
+    message: Optional[str] = Field(None, description="Additional context or goals")
+    source: Optional[str] = Field(None, description="UTM/source for CRO tracking")
